@@ -423,9 +423,12 @@ class MCU:
         self._restart_method = 'command'
         if baud:
             rmethods = {m: m for m in [None, 'arduino', 'cheetah', 'command',
-                                       'rpi_usb']}
+                                       'rpi_usb', 'reset_pin']}
             self._restart_method = config.getchoice(
                 'restart_method', rmethods, None)
+        self._reset_pin = None
+        if self._restart_method == 'reset_pin':
+            self._reset_pin = config.get('output_pin')
         self._reset_cmd = self._config_reset_cmd = None
         self._emergency_stop_cmd = None
         self._is_shutdown = self._is_timeout = False
@@ -757,6 +760,15 @@ class MCU:
             self._restart_via_command()
         elif self._restart_method == 'cheetah':
             self._restart_cheetah()
+        elif self._restart_method == 'reset_pin':
+            self._disconnect()
+            output_pin = self._printer.lookup_object('output_pin %s' % self._reset_pin)
+            reset_pin = output_pin.mcu_pin
+            toolhead = self._printer.lookup_object('toolhead')
+            reset_pin.set_digital(toolhead.get_last_move(), reset_pin._start_value)
+            self._reactor.pause(self._reactor.monotonic() + 0.100)
+            reset_pin.set_digital(toolhead.get_last_move(), reset_pin._shutdown_value)
+            self._reactor.pause(self._reactor.monotonic() + 0.100)
         else:
             self._restart_arduino()
     # Misc external commands

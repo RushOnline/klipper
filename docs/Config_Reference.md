@@ -48,7 +48,7 @@ serial:
 #restart_method:
 #   This controls the mechanism the host will use to reset the
 #   micro-controller. The choices are 'arduino', 'cheetah', 'rpi_usb',
-#   and 'command'. The 'arduino' method (toggle DTR) is common on
+#   'restart_pin' and 'command'. The 'arduino' method (toggle DTR) is common on
 #   Arduino boards and clones. The 'cheetah' method is a special
 #   method needed for some Fysetc Cheetah boards. The 'rpi_usb' method
 #   is useful on Raspberry Pi boards with micro-controllers powered
@@ -57,6 +57,11 @@ serial:
 #   sending a Klipper command to the micro-controller so that it can
 #   reset itself. The default is 'arduino' if the micro-controller
 #   communicates over a serial port, 'command' otherwise.
+#   The 'restart_pin' is useful to hardware reset MCU, it requires
+#   linux host mcu and ouitput pin.
+#output_pin:
+#   This option must be set to matching output_pin section name.
+#   **NB: this pin must not be located on other mcu!**
 ```
 
 ## [mcu my_extra_mcu]
